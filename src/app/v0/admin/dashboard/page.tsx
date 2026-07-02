@@ -16,13 +16,11 @@ export default function AdminDashboard() {
   const router = useRouter();
 
   useEffect(() => {
-    // Check auth
     const auth = sessionStorage.getItem('admin_auth');
     if (!auth) {
       router.push('/v0/admin');
       return;
     }
-    // Load existing entries
     const saved = localStorage.getItem('code_entries');
     if (saved) {
       setEntries(JSON.parse(saved));
@@ -54,14 +52,12 @@ export default function AdminDashboard() {
     const updated = [...entries, newEntry];
     setEntries(updated);
     localStorage.setItem('code_entries', JSON.stringify(updated));
-    
-    // Clear input
     setCode('');
   };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
-    alert('Đã copy: ' + text);
+    alert('Da copy: ' + text);
   };
 
   return (
@@ -70,11 +66,11 @@ export default function AdminDashboard() {
         <h1 className="text-3xl font-bold mb-8">Admin Dashboard</h1>
         
         <div className="bg-gray-800 p-6 rounded-lg mb-8">
-          <h2 className="text-xl font-semibold mb-4">Tạo Code mới</h2>
+          <h2 className="text-xl font-semibold mb-4">Tao Code moi</h2>
           <textarea
             value={code}
             onChange={(e) => setCode(e.target.value)}
-            placeholder="Paste code vào đây..."
+            placeholder="Paste code vao day..."
             className="w-full h-40 bg-gray-700 text-white p-4 rounded border border-gray-600 focus:border-blue-500 focus:outline-none mb-4 font-mono text-sm"
           />
           <button
@@ -86,7 +82,7 @@ export default function AdminDashboard() {
         </div>
 
         <div className="bg-gray-800 p-6 rounded-lg">
-          <h2 className="text-xl font-semibold mb-4">Danh sách Code</h2>
+          <h2 className="text-xl font-semibold mb-4">Danh sach Code</h2>
           <div className="space-y-4">
             {entries.map((entry) => (
               <div key={entry.id} className="bg-gray-700 p-4 rounded">
@@ -105,7 +101,7 @@ export default function AdminDashboard() {
               </div>
             ))}
             {entries.length === 0 && (
-              <p className="text-gray-400">Chưa có code nào được tạo.</p>
+              <p className="text-gray-400">Chua co code nao duoc tao.</p>
             )}
           </div>
         </div>
