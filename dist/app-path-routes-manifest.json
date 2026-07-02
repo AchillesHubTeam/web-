@@ -1,0 +1,11 @@
+{
+  "/_global-error/page": "/_global-error",
+  "/_not-found/page": "/_not-found",
+  "/api/raw/[id]/route": "/api/raw/[id]",
+  "/favicon.ico/route": "/favicon.ico",
+  "/page": "/",
+  "/raw/[id]/page": "/raw/[id]",
+  "/v0/admin/dashboard/page": "/v0/admin/dashboard",
+  "/v0/admin/page": "/v0/admin",
+  "/v14t93rt3/source/[slug]/page": "/v14t93rt3/source/[slug]"
+}
