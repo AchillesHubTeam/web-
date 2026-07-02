@@ -10,8 +10,25 @@ export default function SourcePage() {
   const [result, setResult] = useState('');
   const [showResult, setShowResult] = useState(false);
 
-  // Encrypt function: tao loadstring + obfuscate thanh _bsdata
-  const encryptToBsData = (input: string): { rawUrl: string; bsDataUrl: string } => {
+  // Ham tao obfuscated _bsdata giong nhu user yeu cau
+  const createObfuscatedBsData = (url: string): string => {
+    // Chia URL thanh cac phan de obfuscate
+    const urlChars = url.split('').map(c => c.charCodeAt(0));
+    
+    // Tao _bsdata voi string.char() obfuscation
+    const charCodes = urlChars.join(',');
+    
+    // Tao doan code obfuscated
+    const obfuscated = `--dont use this
+--use loadstring
+_bsdata={["_0x1"]=string.char(108,111,97,100,115,116,114,105,110,103),["_0x2"]=string.char(103,97,109,101,58,72,116,116,112,71,101,116),["_0x3"]=string.char(${charCodes})}; _G[_bsdata["_0x1"]](_G[_bsdata["_0x2"]](_bsdata["_0x3"]))()`;
+    
+    return obfuscated;
+  };
+
+  const handleEncrypt = () => {
+    if (!code.trim()) return;
+
     // Generate random ID cho /raw/ endpoint (9 chars)
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let randomId = '';
@@ -19,40 +36,24 @@ export default function SourcePage() {
       randomId += chars.charAt(Math.floor(Math.random() * chars.length));
     }
 
-    // URL cua trang raw (chua ma hoa)
-    const rawUrl = `/raw/${randomId}`;
-    const fullRawUrl = typeof window !== 'undefined' ? window.location.origin + rawUrl : rawUrl;
+    // URL cua trang v14t93rt3/source (noi chua code goc)
+    const v14Url = typeof window !== 'undefined' 
+      ? `${window.location.origin}/v14t93rt3/source/${slug}`
+      : `/v14t93rt3/source/${slug}`;
 
-    // Tao loadstring code de fetch tu raw URL
-    // Format: loadstring(game:HttpGet("URL"))()
-    const loadstringCode = `loadstring(game:HttpGet("${fullRawUrl}"))()`;
+    // Tao obfuscated _bsdata de load v14Url
+    const obfuscatedCode = createObfuscatedBsData(v14Url);
 
-    // Obfuscate: ma hoa loadstring+url thanh _bsdata
-    // Them ghi chu --dont use this
-    const dataWithComment = `--dont use this\n${loadstringCode}`;
+    // Luu code goc vao localStorage de trang v14 co the tra ve
+    localStorage.setItem(`source_${slug}`, code.trim());
 
-    // Convert to base64
-    const base64 = btoa(unescape(encodeURIComponent(dataWithComment)));
-
-    // Tao _bsdata voi prefix 'v'
+    // Tao URL cho /raw/{id} voi _bsdata parameter
+    // _bsdata se chua doan obfuscated code da duoc ma hoa base64
+    const base64 = btoa(unescape(encodeURIComponent(obfuscatedCode)));
     const bsData = `v${base64}`;
+    const rawUrl = `/raw/${randomId}?_bsdata=${encodeURIComponent(bsData)}`;
 
-    // URL voi _bsdata parameter
-    const bsDataUrl = `${rawUrl}?_bsdata=${encodeURIComponent(bsData)}`;
-
-    return { rawUrl, bsDataUrl };
-  };
-
-  const handleEncrypt = () => {
-    if (!code.trim()) return;
-
-    const { rawUrl, bsDataUrl } = encryptToBsData(code);
-
-    // Luu code vao localStorage de trang raw co the lay
-    const fullRawUrl = typeof window !== 'undefined' ? window.location.origin + rawUrl : rawUrl;
-    localStorage.setItem(`raw_${rawUrl.split('/').pop()}`, code.trim());
-
-    setResult(bsDataUrl);
+    setResult(rawUrl);
     setShowResult(true);
   };
 
@@ -87,29 +88,14 @@ export default function SourcePage() {
           <div className="bg-gray-800 p-6 rounded-lg">
             <h2 className="text-xl font-semibold mb-4">Ket qua</h2>
 
-            {/* Hien thi URL voi _bsdata */}
             <div className="bg-gray-900 p-4 rounded mb-4">
-              <p className="text-sm text-gray-400 mb-2">URL voi _bsdata (dan cho user copy):</p>
+              <p className="text-sm text-gray-400 mb-2">URL /raw/ de dan cho user:</p>
               <code className="text-green-400 break-all block mb-2">{result}</code>
               <button
                 onClick={() => copyToClipboard(typeof window !== 'undefined' ? window.location.origin + result : result)}
                 className="bg-green-600 hover:bg-green-700 text-white text-sm py-1 px-3 rounded transition"
               >
                 Copy Full URL
-              </button>
-            </div>
-
-            {/* Hien thi doan _bsdata rieng */}
-            <div className="bg-gray-900 p-4 rounded mb-4">
-              <p className="text-sm text-gray-400 mb-2">Hoac copy doan _bsdata nay:</p>
-              <code className="text-yellow-400 break-all block mb-2">
-                _bsdata={result.split('_bsdata=')[1]}
-              </code>
-              <button
-                onClick={() => copyToClipboard('_bsdata=' + result.split('_bsdata=')[1])}
-                className="bg-yellow-600 hover:bg-yellow-700 text-white text-sm py-1 px-3 rounded transition"
-              >
-                Copy _bsdata
               </button>
             </div>
           </div>

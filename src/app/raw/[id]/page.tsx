@@ -24,10 +24,8 @@ export default function RawPage() {
         setError('Invalid _bsdata parameter');
       }
     } else {
-      // Khong co _bsdata: hien thi loadstring de fetch code tu URL nay
-      const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
-      const loadstringCode = `loadstring(game:HttpGet("${currentUrl}"))()`;
-      setDisplayContent(loadstringCode);
+      // Khong co _bsdata: hien thi message mac dinh
+      setDisplayContent('--dont use this\n// No code data provided\n// Use _bsdata parameter to load code');
     }
   }, [searchParams, id]);
 
